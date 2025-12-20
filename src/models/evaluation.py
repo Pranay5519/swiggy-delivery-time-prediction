@@ -154,7 +154,7 @@ if __name__ == "__main__":
                                     model_output=model.predict(X_train.sample(20,random_state=42)))
         
         # log the final model
-        mlflow.sklearn.log_model(model,"delivery_time_pred_model",signature=model_signature)
+        mlflow.sklearn.log_model(model,name = "delivery_time_pred_model_1",signature=model_signature , registered_model_name="delivery_time_pred_model_1")
 
         # log stacking regressor
         mlflow.log_artifact(root_path / "models" / "stacking_regressor.joblib")
@@ -172,7 +172,7 @@ if __name__ == "__main__":
         
     # get the run id 
     run_id = run.info.run_id
-    model_name = "delivery_time_pred_model"
+    model_name = "delivery_time_pred_model_1" # Change this as per your model name !!!!!!!!!!!!!!!
     
     # save the model info
     save_json_path = root_path / "run_information.json"

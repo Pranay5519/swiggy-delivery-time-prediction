@@ -1,4 +1,7 @@
 [core]
-    remote = myremote
-['remote "myremote"']
-    url = ../s3bucket
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.dvc
+    auth = basic
+    user = Pranay5519
+    password = b8d9c15fcf9c1389830f5634a59f8b1c06525b17

@@ -2,6 +2,19 @@ import numpy as np
 import pandas as pd
 
 
+columns_to_drop =  ['rider_id',
+                    'restaurant_latitude',
+                    'restaurant_longitude',
+                    'delivery_latitude',
+                    'delivery_longitude',
+                    'order_date',
+                    "order_time_hour",
+                    "order_day",
+                    "city_name",
+                    "order_day_of_week",
+                    "order_month"]
+
+
 def change_column_names(data: pd.DataFrame):
     return (
         data.rename(str.lower,axis=1)
@@ -15,8 +28,9 @@ def change_column_names(data: pd.DataFrame):
             "time_order_picked": "order_picked_time",
             "weatherconditions": "weather",
             "road_traffic_density": "traffic",
-            "city": "city_type",
-            "time_taken(min)": "time_taken"},axis=1)
+            "city": "city_type"},
+            #"time_taken(min)": "time_taken"},
+            axis=1)
     )
 
 
@@ -28,7 +42,7 @@ def data_cleaning(data: pd.DataFrame):
 
     return (
         data
-        .drop(columns="id")
+        .drop(columns=["id"], errors="ignore")
         .drop(index=minor_index)                                                # Minor riders in data dropped
         .drop(index=six_star_index)                                             # six star rated drivers dropped
         .replace("NaN ",np.nan)                                                 # missing values in the data
@@ -81,11 +95,11 @@ def data_cleaning(data: pd.DataFrame):
             festival = lambda x: x['festival'].str.rstrip().str.lower(),
             city_type = lambda x: x['city_type'].str.rstrip().str.lower(),
             # multiple deliveries column
-            multiple_deliveries = lambda x: x['multiple_deliveries'].astype(float),
+            multiple_deliveries = lambda x: x['multiple_deliveries'].astype(float))
             # target column modifications
-            time_taken = lambda x: (x['time_taken']
-                                    .str.replace("(min) ","")
-                                    .astype(int)))
+            # time_taken = lambda x: (x['time_taken']
+            #                         .str.replace("(min) ","")
+            #                         .astype(int)))
         .drop(columns=["order_time","order_picked_time"])
     )
     
@@ -131,6 +145,12 @@ def time_of_day(ser):
                labels=["after_midnight","morning","afternoon","evening","night"])
     )
 
+
+def drop_columns(data: pd.DataFrame, columns: list) -> pd.DataFrame:
+    df = data.drop(columns=columns)
+    return df
+
+
 def calculate_haversine_distance(df):
     location_columns = ['restaurant_latitude',
                         'restaurant_longitude',
@@ -167,8 +187,8 @@ def create_distance_type(data: pd.DataFrame):
     ))
 
 
-def perform_data_cleaning(data: pd.DataFrame, saved_data_path="swiggy_cleaned.csv"):
-    
+def perform_data_cleaning(data: pd.DataFrame):
+
     cleaned_data = (
         data
         .pipe(change_column_names)
@@ -176,10 +196,11 @@ def perform_data_cleaning(data: pd.DataFrame, saved_data_path="swiggy_cleaned.cs
         .pipe(clean_lat_long)
         .pipe(calculate_haversine_distance)
         .pipe(create_distance_type)
+        .pipe(drop_columns, columns=columns_to_drop)
     )
-    
-    # save the data
-    cleaned_data.to_csv(saved_data_path,index=False)
+
+    return cleaned_data.dropna()
+
     
     
 
@@ -192,4 +213,3 @@ if __name__ == "__main__":
     print('swiggy data loaded successfuly')
     
     perform_data_cleaning(df)
-    

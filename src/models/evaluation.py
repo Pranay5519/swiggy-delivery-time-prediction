@@ -145,7 +145,7 @@ if __name__ == "__main__":
         train_data_input = mlflow.data.from_pandas(train_data,targets=TARGET)
         test_data_input = mlflow.data.from_pandas(test_data,targets=TARGET)
         
-        # log input
+        # log  input
         mlflow.log_input(dataset=train_data_input,context="training")
         mlflow.log_input(dataset=test_data_input,context="validation")
         

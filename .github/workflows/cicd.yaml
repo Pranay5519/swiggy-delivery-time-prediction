@@ -22,7 +22,7 @@ jobs:
 
       # - name: DVC Pull
       #   run: |
-      #     dvc pull
+      ##     dvc pull
 
       - name: Test Model Registry
         env:

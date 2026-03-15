@@ -20,6 +20,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: DVC Pull
+      # - name: DVC Pull
+      #   run: |
+      #     dvc pull
+
+      - name: Test Model Registry
+        env:
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
-          dvc pull
+          pytest tests/test_model_registry.py
+
+      - name: Test Model Performance
+        env:
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          pytest tests/test_model_perf.py

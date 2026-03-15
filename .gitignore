@@ -92,3 +92,4 @@ tox.ini
 .history
 /run_information.json
 s3bucket
+data/

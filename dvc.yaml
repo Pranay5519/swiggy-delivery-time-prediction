@@ -31,9 +31,9 @@ stages:
     - models/preprocessor.joblib
 
   train:
-    cmd: python src/models/train.py
+    cmd: python src/model/train.py
     deps:
-    - src/models/train.py
+    - src/model/train.py
     - data/processed/train_trans.csv
     params:
     - Train.Random_Forest
@@ -44,17 +44,17 @@ stages:
     - models/stacking_regressor.joblib
 
   evaluation:
-    cmd: python src/models/evaluation.py
+    cmd: python src/model/evaluation.py
     deps:
-    - src/models/evaluation.py
+    - src/model/evaluation.py
     - data/processed/train_trans.csv
     - data/processed/test_trans.csv
     - models/model.joblib
     outs:
     - run_information.json
 
-  # register_model:
-  #   cmd: python src/models/register_model.py
-  #   deps:
-  #   - src/models/register_model.py
-  #   - run_information.json
+  register_model:
+    cmd: python src/model/register_model.py
+    deps:
+    - src/model/register_model.py
+    - run_information.json

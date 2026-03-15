@@ -24,7 +24,6 @@ dagshub.init(repo_owner='Pranay5519',
 # set the mlflow tracking server
 mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
 
-
 class Data(BaseModel):  
     ID: str
     Delivery_person_ID: str
@@ -77,28 +76,24 @@ nominal_cat_cols = ['weather',
 
 ordinal_cat_cols = ["traffic","distance_type"]
 
-#mlflow client
-client = MlflowClient()
 
-# load the model info to get the model name
-model_name = load_model_information("run_information.json")['model_name']
+def load_model_and_preprocessor(model_name, model_alias, preprocessor_path):
+    mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
 
-# stage of the model
-stage = "Staging"
 
-# get the latest model version
-# latest_model_ver = client.get_latest_versions(name=model_name,stages=[stage])
-# print(f"Latest model in production is version {latest_model_ver[0].version}")
+    client = MlflowClient()
 
-# load model path
-model_path = f"models:/{model_name}/{stage}"
+    model_uri = f"models:/{model_name}@{model_alias}"
+    model = mlflow.sklearn.load_model(model_uri)
 
-# load the latest model from model registry
-model = mlflow.sklearn.load_model(model_path)
+    vectorizer = joblib.load(preprocessor_path)
 
-# load the preprocessor
-preprocessor_path = "models/preprocessor.joblib"
-preprocessor = load_transformer(preprocessor_path)
+    return model, vectorizer
+
+
+model , preprocessor = load_model_and_preprocessor(model_name="delivery_time_pred_model_1",
+                                                   model_alias="staging",
+                                                   preprocessor_path="models\preprocessor.joblib")
 
 # build the model pipeline
 model_pipe = Pipeline(steps=[

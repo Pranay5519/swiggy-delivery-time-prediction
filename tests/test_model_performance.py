@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 import joblib
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
-
+from mlflow.tracking import MlflowClient
 dagshub.init(repo_owner='Pranay5519', 
              repo_name='swiggy-delivery-time-prediction', 
              mlflow=True)
@@ -16,33 +16,25 @@ dagshub.init(repo_owner='Pranay5519',
 mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
 
 
-def load_model_information(file_path):
-    with open(file_path) as f:
-        run_info = json.load(f)
-        
-    return run_info
+def load_model_and_preprocessor(model_name, model_alias, preprocessor_path):
+    mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
 
 
-def load_transformer(transformer_path):
-    transformer = joblib.load(transformer_path)
-    return transformer
+    client = MlflowClient()
 
-# set model name
-model_name = load_model_information("run_information.json")["model_name"]
-stage = "Staging"
+    model_uri = f"models:/{model_name}@{model_alias}"
+    model = mlflow.sklearn.load_model(model_uri)
 
-# load the model
-model_path = f"models:/{model_name}/{stage}"
+    vectorizer = joblib.load(preprocessor_path)
 
-# load the latest model from model registry
-model = mlflow.sklearn.load_model(model_path)
+    return model, vectorizer
 
-# set the root path
-root_path = Path(__file__).parent.parent
+model_name="delivery_time_pred_model_1"
 
-# load the preprocessor
-preprocessor_path = root_path / "models" / "preprocessor.joblib"
-preprocessor = load_transformer(preprocessor_path)
+model , preprocessor = load_model_and_preprocessor(model_name="delivery_time_pred_model_1",
+                                                   model_alias="staging",
+                                                   preprocessor_path="models\preprocessor.joblib")
+
 
 
 # build the model pipeline
@@ -50,6 +42,7 @@ model_pipe = Pipeline(steps=[
     ('preprocess',preprocessor),
     ("regressor",model)
 ])
+root_path = Path(__file__).parent.parent
 
 test_data_path = root_path / "data" / "interim" / "test.csv"
 

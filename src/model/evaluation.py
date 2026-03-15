@@ -78,7 +78,6 @@ if __name__ == "__main__":
     # model path
     model_path = root_path / "models" / "model.joblib"
     
-    
     # load the training data
     train_data = load_data(train_data_path)
     logger.info("Train data loaded successfully")
@@ -94,7 +93,6 @@ if __name__ == "__main__":
     # load the model
     model = load_model(model_path)
     logger.info("Model Loaded successfully")
-    
     
     # get the predictions
     y_train_pred = model.predict(X_train)

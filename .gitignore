@@ -93,3 +93,4 @@ tox.ini
 /run_information.json
 s3bucket
 data/
+/data

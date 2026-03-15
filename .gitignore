@@ -94,3 +94,4 @@ tox.ini
 s3bucket
 data/
 /data
+models/

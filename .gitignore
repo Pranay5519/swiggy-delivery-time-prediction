@@ -93,5 +93,7 @@ tox.ini
 /run_information.json
 s3bucket
 data/
-/data
+data/*
+!data/*.dvc
+!data/raw.dvc
 models/

@@ -172,7 +172,7 @@ if __name__ == "__main__":
         
     # get the run id 
     run_id = run.info.run_id
-    model_name = "delivery_time_pred_model_1" # Change this as per your model name !!!!!!!!!!!!!!!
+    model_name = "delivery_time_pred_model_1" 
     
     # save the model info
     save_json_path = root_path / "run_information.json"

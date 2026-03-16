@@ -9,17 +9,9 @@ import joblib
 from mlflow import MlflowClient
 from sklearn import set_config
 from data_clean_utils import perform_data_cleaning
-
+from fastapi.middleware.cors import CORSMiddleware
 # set the output as pandas
 set_config(transform_output='pandas')
-
-# initialize dagshub
-import dagshub
-import mlflow.client
-
-dagshub.init(repo_owner='Pranay5519', 
-             repo_name='swiggy-delivery-time-prediction', 
-             mlflow=True)
 
 # set the mlflow tracking server
 mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
@@ -92,8 +84,8 @@ def load_model_and_preprocessor(model_name, model_alias, preprocessor_path):
 
 
 model , preprocessor = load_model_and_preprocessor(model_name="delivery_time_pred_model_1",
-                                                   model_alias="staging",
-                                                   preprocessor_path="models\preprocessor.joblib")
+                                                   model_alias="production",
+                                                   preprocessor_path="models/preprocessor.joblib")
 
 # build the model pipeline
 model_pipe = Pipeline(steps=[
@@ -103,7 +95,16 @@ model_pipe = Pipeline(steps=[
 
 # create the app
 app = FastAPI()
-
+# -------------------------
+# CORS
+# -------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # create the home endpoint
 @app.get(path="/")
 def home():

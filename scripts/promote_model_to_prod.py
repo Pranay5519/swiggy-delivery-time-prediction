@@ -1,40 +1,87 @@
 import mlflow
-import dagshub
+import os
 import json
-from mlflow import MlflowClient
+from dotenv import load_dotenv
+from mlflow.tracking import MlflowClient
 
-dagshub.init(repo_owner='Pranay5519', 
-             repo_name='swiggy-delivery-time-prediction', 
-             mlflow=True)
+# -----------------------
+# Load ENV
+# -----------------------
+load_dotenv()
 
-# set the mlflow tracking server
-mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
+dagshub_token = os.getenv("DAGSHUB_PAT")
+if not dagshub_token:
+    raise EnvironmentError("DAGSHUB_PAT not set")
 
+os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+TRACKING_URI = "https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow"
+
+mlflow.set_tracking_uri(TRACKING_URI)
+
+client = MlflowClient(tracking_uri=TRACKING_URI)
+
+
+# -----------------------
+# Load model name
+# -----------------------
 def load_model_information(file_path):
     with open(file_path) as f:
         run_info = json.load(f)
-        
     return run_info
 
 
-# get model  name 
-model_name = load_model_information("run_information.json")["model_name"]
-stage = "Staging"
+# -----------------------
+# Promotion Logic
+# -----------------------
+def promote_staging_to_production(model_name: str):
 
-# get the latest version from staging stage
-client = MlflowClient()
+    try:
+        # archive current production
+        try:
+            old_prod = client.get_model_version_by_alias(model_name, "production")
+            client.set_registered_model_alias(
+                model_name,
+                "archived",
+                old_prod.version
+            )
+            print(f"Archived old production version: {old_prod.version}")
 
-# get the latest version of model in staging
-latest_versions = client.get_latest_versions(name=model_name,stages=[stage])
+        except Exception:
+            print("No existing production model")
 
-latest_model_version_staging = latest_versions[0].version
+        # get staging model
+        staging_version = client.get_model_version_by_alias(
+            model_name,
+            "staging"
+        ).version
 
-# promotion stage
-promotion_stage = "Production"
+        # promote
+        client.set_registered_model_alias(
+            model_name,
+            "production",
+            staging_version
+        )
 
-client.transition_model_version_stage(
-    name=model_name,
-    version=latest_model_version_staging,
-    stage=promotion_stage,
-    archive_existing_versions=True
-)
+        # remove staging alias
+        client.delete_registered_model_alias(
+            model_name,
+            "staging"
+        )
+
+        print(f"Promoted version {staging_version} → production")
+
+    except Exception as e:
+        print(f"Promotion failed: {e}")
+        raise
+
+
+# -----------------------
+# Run
+# -----------------------
+model_name = load_model_information(
+    "run_information.json"
+)["model_name"]
+
+promote_staging_to_production(model_name)

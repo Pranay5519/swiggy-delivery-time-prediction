@@ -1,5 +1,10 @@
 [core]
-    remote = myremote
+    remote = dagshub
     autostage = true
 ['remote "myremote"']
     url = C:\Users\prana\Desktop\PROJECTS\swiggy-delivery-time-prediction-project\s3bucket
+['remote "dagshub"']
+    url = https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.dvc
+    auth = basic
+    user = Pranay5519
+    password = d15ef986cebb5175962767572693d326205efed6

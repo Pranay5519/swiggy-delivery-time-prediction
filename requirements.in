@@ -1,0 +1,12 @@
+dvc
+python-dotenv
+mlflow
+dagshub
+scikit-learn
+pandas
+numpy
+joblib
+lightgbm
+fastapi
+uvicorn
+dvc[s3] 

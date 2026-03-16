@@ -20,6 +20,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
+      - name: Install DVC
+        run: |
+          pip install "dvc[s3]"
+
       - name: DVC Pull
         run: |
            dvc pull

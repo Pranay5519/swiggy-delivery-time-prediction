@@ -17,7 +17,7 @@ def load_model_and_preprocessor(model_name, model_alias, vectorizer_path):
 
 
 model , preprocessor = load_model_and_preprocessor(model_name="delivery_time_pred_model_1",
-                                                   model_alias="staging",
+                                                   model_alias="production",
                                                    vectorizer_path="models\preprocessor.joblib")
 
 print(type(model) ,type(preprocessor))

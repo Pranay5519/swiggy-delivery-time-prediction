@@ -32,7 +32,7 @@ def load_model_and_preprocessor(model_name, model_alias, preprocessor_path):
 model_name="delivery_time_pred_model_1"
 
 model , preprocessor = load_model_and_preprocessor(model_name="delivery_time_pred_model_1",
-                                                   model_alias="staging",
+                                                   model_alias="production",
                                                    preprocessor_path="models\preprocessor.joblib")
 
 

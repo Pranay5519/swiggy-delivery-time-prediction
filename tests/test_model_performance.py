@@ -16,7 +16,7 @@ dagshub.init(repo_owner='Pranay5519',
 mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
 
 
-def load_model_and_preprocessor(model_name, model_alias, preprocessor_path):
+def load_model_and_preprocessor(model_name, model_alias):
     mlflow.set_tracking_uri("https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow")
 
 
@@ -25,15 +25,18 @@ def load_model_and_preprocessor(model_name, model_alias, preprocessor_path):
     model_uri = f"models:/{model_name}@{model_alias}"
     model = mlflow.sklearn.load_model(model_uri)
 
-    vectorizer = joblib.load(preprocessor_path)
+    preprocessor_path = mlflow.artifacts.download_artifacts(
+        artifact_uri="mlflow-artifacts:/1cca07a4f4e44a08b502e757d798ade9/fa28573ea10a4567a68a3f8939df2033/artifacts/preprocessor.joblib"
+    )
 
-    return model, vectorizer
+    preprocessor = joblib.load(preprocessor_path)
+
+    return model, preprocessor
 
 model_name="delivery_time_pred_model_1"
 
 model , preprocessor = load_model_and_preprocessor(model_name="delivery_time_pred_model_1",
-                                                   model_alias="production",
-                                                   preprocessor_path="models\preprocessor.joblib")
+                                                   model_alias="production" )
 
 
 
@@ -64,7 +67,7 @@ def test_model_performance(model_pipe,test_data_path,threshold_error):
     
     # calculate the mean error
     mean_error = mean_absolute_error(y,y_pred)
-    
+    print(mean_error)
     # check for performance
     assert mean_error <= threshold_error, f"The model does not pass the performance threshold of {threshold_error} minutes"
     print("The avg error is", mean_error)

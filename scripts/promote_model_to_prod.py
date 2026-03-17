@@ -9,12 +9,12 @@ from mlflow.tracking import MlflowClient
 # -----------------------
 load_dotenv()
 
-dagshub_token = os.getenv("DAGSHUB_PAT")
-if not dagshub_token:
-    raise EnvironmentError("DAGSHUB_PAT not set")
+# dagshub_token = os.getenv("DAGSHUB_PAT")
+# if not dagshub_token:
+#     raise EnvironmentError("DAGSHUB_PAT not set")
 
-os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
-os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+# os.environ["MLFLOW_TRACKING_USERNAME"] = "Pranay5519"
+# os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
 TRACKING_URI = "https://dagshub.com/Pranay5519/swiggy-delivery-time-prediction.mlflow"
 
